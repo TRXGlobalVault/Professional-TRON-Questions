@@ -46,6 +46,12 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 #progress{width:0%;height:100%;background:var(--accent);border-radius:12px;}
 .question-card{background:linear-gradient(180deg,#141826,#12151b);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;}
 .question-card h2{text-align:center;font-size:18px;}
+.wallet-text {
+  font-size:12px;           /* уменьшенный шрифт */
+  word-break: break-all;    /* перенос длинных слов */
+  overflow-wrap: anywhere;
+  max-width:100%;
+}
 </style>
 </head>
 
@@ -79,9 +85,9 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 
     <!-- End -->
     <div id="end-screen" class="section" style="display:none;">
-      <h1>Thank you for participating !</h1>
+      <h1>Thank you for participating!</h1>
       <p id="final-login-text"></p>
-      <p id="final-wallet-text"></p>
+      <p id="final-wallet-text" class="wallet-text"></p>
       <p id="final-balance-text"></p>
       <p>For verification and payout, please contact the manager.</p>
       <p>Please take a screenshot for the manager.</p>
@@ -141,38 +147,12 @@ const q=document.getElementById("question-text");
 const bal=document.getElementById("balance-display");
 const prog=document.getElementById("progress");
 
-document.getElementById("start-btn").onclick=()=>{
-  fbq('track','Lead');
-  document.getElementById("register-screen").style.display="none";
-  document.getElementById("quiz-screen").style.display="flex";
-  q.innerText=questions[i];
-};
-
-document.querySelectorAll(".answer-btn").forEach(b=>{
-  b.onclick=()=>{
-    balance+=0.47;
-    i++;
-    bal.innerText="Balance: $"+balance.toFixed(2);
-    prog.style.width=(i/questions.length*100)+"%";
-    if(i>=questions.length){
-      fbq('track','CompleteRegistration',{value:balance,currency:'USD'});
-      document.getElementById("quiz-screen").style.display="none";
-      document.getElementById("end-screen").style.display="flex";
-      document.getElementById("final-login-text").innerText="Login: "+login.value;
-      document.getElementById("final-wallet-text").innerText="Wallet: "+wallet.value;
-      document.getElementById("final-balance-text").innerText="Earned: $"+balance.toFixed(2);
-    } else {
-      q.innerText=questions[i];
-    }
-  }
-});
-
-/* ===== ДОБАВЛЕНА ТОЛЬКО ПРОВЕРКА ПОЛЕЙ ===== */
 const loginInput = document.getElementById("login");
 const passwordInput = document.getElementById("password");
 const walletInput = document.getElementById("wallet");
 const startBtn = document.getElementById("start-btn");
 
+// ===== Проверка полей =====
 function checkInputs() {
   if (
     loginInput.value.trim() !== "" &&
@@ -192,7 +172,73 @@ function checkInputs() {
 loginInput.addEventListener("input", checkInputs);
 passwordInput.addEventListener("input", checkInputs);
 walletInput.addEventListener("input", checkInputs);
-/* ===== КОНЕЦ ДОБАВЛЕНИЯ ===== */
+
+// ===== Сохранение и загрузка прогресса =====
+function saveProgress() {
+  localStorage.setItem('tronSurvey', JSON.stringify({
+    login: loginInput.value,
+    wallet: walletInput.value,
+    balance: balance,
+    questionIndex: i
+  }));
+}
+
+window.addEventListener('load', () => {
+  const saved = JSON.parse(localStorage.getItem('tronSurvey'));
+  if(saved) {
+    loginInput.value = saved.login;
+    walletInput.value = saved.wallet;
+    balance = saved.balance;
+    i = saved.questionIndex;
+    bal.innerText = "Balance: $" + balance.toFixed(2);
+
+    if(i >= questions.length){
+      // Если опрос уже пройден
+      document.getElementById("register-screen").style.display = "none";
+      document.getElementById("quiz-screen").style.display = "none";
+      document.getElementById("end-screen").style.display = "flex";
+      document.getElementById("final-login-text").innerText = "Login: " + saved.login;
+      document.getElementById("final-wallet-text").innerText = "Wallet: " + saved.wallet;
+      document.getElementById("final-balance-text").innerText = "Earned: $" + balance.toFixed(2);
+    } else {
+      // Если опрос не закончен
+      startBtn.disabled = false;
+      startBtn.style.opacity = "1";
+      startBtn.style.cursor = "pointer";
+    }
+  }
+});
+
+// ===== Начало опроса =====
+startBtn.onclick=()=>{
+  fbq('track','Lead');
+  document.getElementById("register-screen").style.display="none";
+  document.getElementById("quiz-screen").style.display="flex";
+  q.innerText=questions[i];
+  saveProgress();
+};
+
+// ===== Вопросы =====
+document.querySelectorAll(".answer-btn").forEach(b=>{
+  b.onclick=()=>{
+    balance+=0.47;
+    i++;
+    bal.innerText="Balance: $"+balance.toFixed(2);
+    prog.style.width=(i/questions.length*100)+"%";
+    saveProgress();
+
+    if(i>=questions.length){
+      fbq('track','CompleteRegistration',{value:balance,currency:'USD'});
+      document.getElementById("quiz-screen").style.display="none";
+      document.getElementById("end-screen").style.display="flex";
+      document.getElementById("final-login-text").innerText="Login: "+loginInput.value;
+      document.getElementById("final-wallet-text").innerText="Wallet: "+walletInput.value;
+      document.getElementById("final-balance-text").innerText="Earned: $"+balance.toFixed(2);
+    } else {
+      q.innerText=questions[i];
+    }
+  }
+});
 </script>
 </body>
 </html>
